@@ -1,15 +1,27 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
 
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>Home Page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js"></script>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css"/>
+  <title>Quiz App</title>
 </head>
-
 <body>
-  <h1 id="animatedText">Hello World</h1>
+  <div class="container">
+      <h1>Quiz App</h1>
+    <div class="quiz-container" id="quiz-container">
+      
+    </div>
+    <div class="pointerBtns">
+      <button id="prevBtn"><--</button>
+      <button id="nextBtn">--></button>
+    </div>
+      <div>
+        <button class="submitBtn" id="submitBtn">Submit</button>
+      </div>    
+      <h1 id="resultDiv"></h1>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
