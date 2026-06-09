@@ -1,122 +1,176 @@
-
 const questions = [
   {
-    id: 1,
     question: "What is the capital of Nigeria?",
     options: ["Lagos", "Abuja", "Kano", "Port Harcourt"],
     answer: "Abuja"
   },
   {
-    id: 2,
     question: "Which language is used for web styling?",
-    options: ["HTML", "Python", "CSS", "C++"],
+    options: ["HTML", "Python", "CSS", "Java"],
     answer: "CSS"
   },
   {
-    id: 3,
-    question: "What does JS stand for in web development?",
-    options: ["Java System", "JavaScript", "Just Script", "JSON Style"],
+    question: "What does JS stand for?",
+    options: ["Java Source", "JavaScript", "JSON Script", "Java Server"],
     answer: "JavaScript"
   },
   {
-    id: 4,
-    question: "What is OOP?",
-    options: ["Optional Object Programming", "Object Orientation Programming", "Object Oriented Programming", "Object Orientedly Program"],
-    answer: "Object Oriented Programming"
+    question: "Which HTML tag creates a button?",
+    options: ["<input>", "<button>", "<btn>", "<click>"],
+    answer: "<button>"
+  },
+  {
+    question: "Which method is used to attach an event?",
+    options: [
+      "addEventListener",
+      "attachButton",
+      "eventHandler",
+      "listenEvent"
+    ],
+    answer: "addEventListener"
   }
 ];
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const feedbackEl = document.getElementById("feedback");
+const scoreEl = document.getElementById("score");
+const resultEl = document.getElementById("result");
+const questionCounterEl = document.getElementById("questionCounter");
+
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const submitBtn = document.getElementById("submitBtn");
-const quizContainer = document.getElementById("quiz-container");
-const resultDiv = document.getElementById("resultDiv");
-let currentIndex = 0;
+
+let currentQuestion = 0;
+let score = 0;
 const userAnswers = [];
 
-nextBtn.addEventListener("click", function(){
-  nextQuestion();
-})
+/* Display Question */
+function displayQuestion() {
 
-prevBtn.addEventListener("click", function(){
-  prevQuestion();
-})
+  const question = questions[currentQuestion];
 
-submitBtn.addEventListener("click", function(){
-  result()
-})
+  questionCounterEl.textContent =
+    `Question ${currentQuestion + 1} of ${questions.length}`;
 
-function displayCurrentQuestion(){
-  
+  questionEl.textContent = question.question;
+
+  optionsEl.innerHTML = "";
+
+  question.options.forEach((option, index) => {
+
+    const button = document.createElement("button");
+
+    button.textContent = option;
+    button.classList.add("optionBtn");
+
+    if (userAnswers[currentQuestion] === index) {
+      button.classList.add("selected");
+    }
+
+    button.addEventListener("click", () => {
+      saveAnswer(index);
+    });
+
+    optionsEl.appendChild(button);
+  });
+}
+
+/* Save Answer */
+function saveAnswer(optionIndex) {
+
+  userAnswers[currentQuestion] = optionIndex;
+
+  displayQuestion();
+
+  const question = questions[currentQuestion];
+  const selectedOption = question.options[optionIndex];
+
+  feedbackEl.classList.remove("correct", "wrong");
+
+  if (selectedOption === question.answer) {
+    feedbackEl.textContent = "Correct!";
+    feedbackEl.classList.add("correct");
+  } else {
+    feedbackEl.textContent = "Wrong!";
+    feedbackEl.classList.add("wrong");
+  }
+}
+
+/* Next Question */
+function nextQuestion() {
+
+  if (userAnswers[currentQuestion] === undefined) {
+    feedbackEl.textContent = "Please select an answer first.";
+    feedbackEl.classList.add("wrong");
+    return;
+  }
+
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    feedbackEl.textContent = "";
+    displayQuestion();
+  }
+}
+
+/* Previous Question */
+function previousQuestion() {
+
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    feedbackEl.textContent = "";
+    displayQuestion();
+  }
+}
+
+/* Calculate Score */
+function calculateScore() {
+
+  score = 0;
+
   questions.forEach((question, index) => {
-    const questionIndex = index;
-    if(index === currentIndex){
-      quizContainer.innerHTML = "";
-      const questionDiv = document.createElement("div");
-      const questionText = document.createElement("p");
-      questionText.textContent = question.question;
-      questionDiv.appendChild(questionText);
-      question.options.forEach((option, index) => {
-        const optionIndex = index;
-        const button = document.createElement("button");
-        button.textContent = option;
-        button.classList.add("optionBtn");
-        if(userAnswers[questionIndex] === optionIndex){
-          button.classList.add("selectedOptionBtn");
-        }
-        button.addEventListener("click", () => {
-          selectedOption(optionIndex);
-          userAnswers[questionIndex] = optionIndex;
-        });
-        questionDiv.appendChild(button);
-      })
-      quizContainer.appendChild(questionDiv);
-    }
-  })
-  
-}
 
-function selectedOption(optionIndex){
-  const buttons = document.querySelectorAll(".optionBtn")
-  buttons.forEach((button, index) => {
-    button.classList.remove("selectedOptionBtn");
-    if(index === optionIndex){
-      button.classList.add("selectedOptionBtn");
-    }
-  })
-}
+    const selectedIndex = userAnswers[index];
 
+    if (selectedIndex !== undefined) {
 
+      const selectedAnswer =
+        question.options[selectedIndex];
 
-function nextQuestion(){
-  if(currentIndex < questions.length-1){
-    currentIndex++;
-  }
-  displayCurrentQuestion();
-}
-
-function prevQuestion(){
-  if(currentIndex > 0){
-    currentIndex--;
-  }
-  displayCurrentQuestion();
-}
-
-function result() {
-  let score = 0;
-
-  questions.forEach((question, questionIndex) => {
-    const userSelectedIndex = userAnswers[questionIndex];
-
-    if (userSelectedIndex !== undefined) {
-      const userSelectedOption = question.options[userSelectedIndex];
-
-      if (userSelectedOption === question.answer) {
+      if (selectedAnswer === question.answer) {
         score++;
       }
     }
   });
-  resultDiv.textContent = `${score} / ${questions.length}`;
+
+  scoreEl.textContent =
+    `Score: ${score}/${questions.length}`;
 }
 
+/* Submit Quiz */
+function submitQuiz() {
 
-displayCurrentQuestion();
+  calculateScore();
+
+  if (score === questions.length) {
+    resultEl.textContent =
+      `Excellent! You scored ${score}/${questions.length}`;
+  } else if (score >= 3) {
+    resultEl.textContent =
+      `Good job! You scored ${score}/${questions.length}`;
+  } else {
+    resultEl.textContent =
+      `Keep practicing! You scored ${score}/${questions.length}`;
+  }
+}
+
+/* Event Listeners */
+nextBtn.addEventListener("click", nextQuestion);
+
+prevBtn.addEventListener("click", previousQuestion);
+
+submitBtn.addEventListener("click", submitQuiz);
+
+/* Start Quiz */
+displayQuestion();
